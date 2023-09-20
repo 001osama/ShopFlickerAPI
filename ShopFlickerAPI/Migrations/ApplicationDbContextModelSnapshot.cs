@@ -22,6 +22,35 @@ namespace ShopFlickerAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("ShopFlickerAPI.Models.LocalUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("ShopFlickerAPI.Models.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -53,7 +82,7 @@ namespace ShopFlickerAPI.Migrations
                         {
                             Id = 1,
                             Amount = 1.99,
-                            CreatedDate = new DateTime(2023, 7, 19, 0, 23, 49, 318, DateTimeKind.Local).AddTicks(9841),
+                            CreatedDate = new DateTime(2023, 7, 20, 22, 36, 35, 160, DateTimeKind.Local).AddTicks(8520),
                             Desc = "Fresh carrots from the local farm.",
                             Name = "Carrots"
                         },
@@ -61,7 +90,7 @@ namespace ShopFlickerAPI.Migrations
                         {
                             Id = 2,
                             Amount = 2.4900000000000002,
-                            CreatedDate = new DateTime(2023, 8, 19, 0, 23, 49, 318, DateTimeKind.Local).AddTicks(9887),
+                            CreatedDate = new DateTime(2023, 8, 20, 22, 36, 35, 160, DateTimeKind.Local).AddTicks(8544),
                             Desc = "Organic broccoli for a healthy diet.",
                             Name = "Broccoli"
                         },
@@ -69,7 +98,7 @@ namespace ShopFlickerAPI.Migrations
                         {
                             Id = 3,
                             Amount = 1.79,
-                            CreatedDate = new DateTime(2023, 6, 19, 0, 23, 49, 318, DateTimeKind.Local).AddTicks(9893),
+                            CreatedDate = new DateTime(2023, 6, 20, 22, 36, 35, 160, DateTimeKind.Local).AddTicks(8547),
                             Desc = "Leafy green spinach, perfect for salads.",
                             Name = "Spinach"
                         },
@@ -77,7 +106,7 @@ namespace ShopFlickerAPI.Migrations
                         {
                             Id = 4,
                             Amount = 2.9900000000000002,
-                            CreatedDate = new DateTime(2023, 7, 19, 0, 23, 49, 318, DateTimeKind.Local).AddTicks(9899),
+                            CreatedDate = new DateTime(2023, 7, 20, 22, 36, 35, 160, DateTimeKind.Local).AddTicks(8549),
                             Desc = "Vine-ripened tomatoes for your recipes.",
                             Name = "Tomatoes"
                         },
@@ -85,15 +114,7 @@ namespace ShopFlickerAPI.Migrations
                         {
                             Id = 5,
                             Amount = 1.49,
-                            CreatedDate = new DateTime(2023, 7, 19, 0, 23, 49, 318, DateTimeKind.Local).AddTicks(9903),
-                            Desc = "Crunchy cucumbers for snacking.",
-                            Name = "Cucumbers"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Amount = 1.49,
-                            CreatedDate = new DateTime(2023, 7, 19, 0, 23, 49, 318, DateTimeKind.Local).AddTicks(9908),
+                            CreatedDate = new DateTime(2023, 7, 20, 22, 36, 35, 160, DateTimeKind.Local).AddTicks(8551),
                             Desc = "Crunchy cucumbers for snacking.",
                             Name = "Cucumbers"
                         });

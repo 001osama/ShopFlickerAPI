@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ShopFlickerAPI.Models;
 using ShopFlickerAPI.Models.DTO;
@@ -18,10 +20,13 @@ namespace ShopFlickerAPI.Controllers
         {
             _dbProduct = dbProduct;
             _mapper = mapper;
-            _response = new();
+            this._response = new();
         }
 
         [HttpGet]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async  Task<ActionResult<APIResponse>> GetProducts([FromQuery] string? search,int pageSize = 0, int pageNumber= 1)
         {
@@ -48,6 +53,7 @@ namespace ShopFlickerAPI.Controllers
 
 
         [HttpGet("{id:int}",Name = "GetProduct")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
 
         public async  Task<ActionResult<APIResponse>> GetProduct(int id)
@@ -83,6 +89,7 @@ namespace ShopFlickerAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult<APIResponse>> CreateProduct([FromBody]ProductDTO createDto)
         {
@@ -116,6 +123,7 @@ namespace ShopFlickerAPI.Controllers
 
 
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
 
         public async Task<ActionResult<APIResponse>> DeleteProduct(int id)
@@ -150,6 +158,7 @@ namespace ShopFlickerAPI.Controllers
 
 
         [HttpPut("{id:int}")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
 
         public async Task<ActionResult<APIResponse>> UpdateProduct(int id, [FromBody] ProductDTO updateDto)

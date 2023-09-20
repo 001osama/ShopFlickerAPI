@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using ShopFlickerAPI.Models;
 using ShopFlickerAPI.Models.DTO;
 
@@ -10,7 +11,9 @@ namespace ShopFlickerAPI.Data
             :base(options)
         {}
 
+        //public DbSet<ApplicationUser> ApplicationUser { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<LocalUser> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
