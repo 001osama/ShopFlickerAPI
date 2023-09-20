@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using ShopFlickerAPI;
 using ShopFlickerAPI.Data;
+using ShopFlickerAPI.Repository;
+using ShopFlickerAPI.Repository.IRepository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
 });
 
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 
 builder.Services.AddControllers();

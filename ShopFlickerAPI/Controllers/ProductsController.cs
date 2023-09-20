@@ -1,80 +1,180 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ShopFlickerAPI.Data;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using ShopFlickerAPI.Models;
 using ShopFlickerAPI.Models.DTO;
+using ShopFlickerAPI.Repository.IRepository;
+using System.Net;
 
 namespace ShopFlickerAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Products")]
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly ApplicationDbContext _db;
-        public ProductsController(ApplicationDbContext db)
+        protected APIResponse _response;
+        private readonly IMapper _mapper;
+        private readonly IProductRepository _dbProduct;
+        public ProductsController(IMapper mapper, IProductRepository dbProduct)
         {
-            _db = db;
+            _dbProduct = dbProduct;
+            _mapper = mapper;
+            _response = new();
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async  Task<ActionResult<IEnumerable<ProductDTO>>> GetProducts()
+        public async  Task<ActionResult<APIResponse>> GetProducts([FromQuery] string? search,int pageSize = 0, int pageNumber= 1)
         {
-            return Ok(await _db.Products.ToListAsync());
+            try
+            {
+                IEnumerable<Product> productList;
+                productList = await _dbProduct.GetAllAsync(pageSize: pageSize, pageNumber: pageNumber);
+
+                if(!string.IsNullOrEmpty(search))
+                {
+                    productList = productList.Where(u => u.Name.ToLower() == search.ToLower());
+                }
+                _response.Result = _mapper.Map<List<ProductDTO>>(productList);
+                return Ok(_response);
+            }
+
+            catch(Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessage = new List<string>() { ex.ToString() };
+            }
+            return _response;
         }
 
 
         [HttpGet("{id:int}",Name = "GetProduct")]
         [ProducesResponseType(StatusCodes.Status200OK)]
 
-        public async  Task<ActionResult<ProductDTO>> GetProduct(int id)
+        public async  Task<ActionResult<APIResponse>> GetProduct(int id)
         {
-            if (id == 0)
+            try
             {
-                return BadRequest();
+                if (id == 0)
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    return BadRequest(_response);
+                }
+
+                var product = await _dbProduct.GetAsync(u => u.Id == id);
+                if (product == null)
+                {
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.IsSuccess = false;
+                    return NotFound(_response);
+                }
+
+                _response.Result = _mapper.Map<ProductDTO>(product);
+                _response.StatusCode = HttpStatusCode.OK;
+                return Ok(_response);
             }
 
-            var villa = await _db.Products.FirstOrDefaultAsync( u=> u.Id == id );
-            if(villa == null)
+            catch(Exception ex)
             {
-                return NotFound();
+                _response.IsSuccess = false;
+                _response.ErrorMessage = new List<string> { ex.ToString() };
             }
-
-            return Ok(villa);
+            return _response;
         }
 
-        public async Task<ActionResult<ProductDTO>> CreateProduct([FromBody]ProductDTO productDto)
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        public async Task<ActionResult<APIResponse>> CreateProduct([FromBody]ProductDTO createDto)
         {
-            if (await _db.Products.FirstOrDefaultAsync(u => u.Name.ToLower() == productDto.Name.ToLower()) != null)
+            try
             {
-                ModelState.AddModelError("Custom Error", "Product Already Exists!");
-                return BadRequest();    
+                if (await _dbProduct.GetAsync( u=> u.Name == createDto.Name) != null)
+                {
+                    ModelState.AddModelError("Custom Error", "Product Already Exists!");
+                    return BadRequest();    
+                }
+
+                if(createDto == null)
+                {
+                    return BadRequest();
+                }
+
+                Product product = _mapper.Map<Product>(createDto);
+
+                await _dbProduct.CreateAsync(product);
+                _response.Result = _mapper.Map<ProductDTO>(product);
+                _response.StatusCode = HttpStatusCode.Created;
+                return CreatedAtRoute("GetVilla", new { id = product.Id }, _response);
             }
-
-            if(productDto == null)
+            catch(Exception ex)
             {
-                return BadRequest();
+                _response.IsSuccess = false;
+                _response.ErrorMessage = new List<string> { ex.ToString() };
             }
-
-            if(productDto.Id > 0)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
-
-            Product model = new Product()
-            {
-                Id = productDto.Id,
-                Name = productDto.Name,
-                Amount = productDto.Amount,
-                Desc = productDto.Desc,
-                CreatedDate = DateTime.Now
-            };
-
-            await _db.Products.AddAsync(model);
-            _db.SaveChanges();
-
-            return CreatedAtRoute("GetVilla", new { id = model.Id }, productDto);
+            return _response;
         }
 
+
+        [HttpDelete("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+
+        public async Task<ActionResult<APIResponse>> DeleteProduct(int id)
+        {
+            try
+            {
+                if (id == 0)
+                {
+                    return BadRequest();
+                }
+
+                var product = await _dbProduct.GetAsync(u => u.Id == id);
+                
+                if (product == null)
+                {
+                    return NotFound();
+                }
+
+                await _dbProduct.RemoveAsync(product);
+                _response.StatusCode = HttpStatusCode.NoContent;
+                _response.IsSuccess = true;
+                return Ok(_response);
+            }
+
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessage = new List<string>() { ex.ToString() };
+            }
+            return _response;
+        }
+
+
+        [HttpPut("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+
+        public async Task<ActionResult<APIResponse>> UpdateProduct(int id, [FromBody] ProductDTO updateDto)
+        {
+            try
+            {
+                if(id == 0 || id != updateDto.Id)
+                {
+                    return BadRequest();
+                }
+
+                Product model = _mapper.Map<Product>(updateDto);
+                await _dbProduct.UpdateAsync(model);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = true;
+                return Ok(_response);
+                    
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessage = new List<string>() { ex.ToString() };
+            }
+            return _response;
+
+        }
     }
 }
