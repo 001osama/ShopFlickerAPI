@@ -53,7 +53,7 @@ namespace ShopFlickerAPI.Controllers
 
 
         [HttpGet("{id:int}",Name = "GetProduct")]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "customer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
 
         public async  Task<ActionResult<APIResponse>> GetProduct(int id)

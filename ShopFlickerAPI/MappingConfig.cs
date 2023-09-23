@@ -9,6 +9,7 @@ namespace ShopFlickerAPI
         public MappingConfig()
         {
             CreateMap<Product, ProductDTO>().ReverseMap();
+            CreateMap<ApplicationUser, UserDTO>().ReverseMap(); 
         }
     }
 }
