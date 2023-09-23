@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting.Internal;
 using ShopFlickerAPI.Models;
 using ShopFlickerAPI.Models.DTO;
 using ShopFlickerAPI.Repository.IRepository;
@@ -16,10 +17,13 @@ namespace ShopFlickerAPI.Controllers
         protected APIResponse _response;
         private readonly IMapper _mapper;
         private readonly IProductRepository _dbProduct;
-        public ProductsController(IMapper mapper, IProductRepository dbProduct)
+        private readonly IWebHostEnvironment _hostEnvironment;
+        public ProductsController(IMapper mapper, IProductRepository dbProduct,
+            IWebHostEnvironment hostEnvironment)
         {
             _dbProduct = dbProduct;
             _mapper = mapper;
+            _hostEnvironment = hostEnvironment;
             this._response = new();
         }
 
@@ -89,9 +93,9 @@ namespace ShopFlickerAPI.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "admin")]
+        //[Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<APIResponse>> CreateProduct([FromBody]ProductDTO createDto)
+        public async Task<ActionResult<APIResponse>> CreateProduct([FromForm]ProductCreateDTO createDto)
         {
             try
             {
@@ -101,12 +105,31 @@ namespace ShopFlickerAPI.Controllers
                     return BadRequest();    
                 }
 
-                if(createDto == null)
+
+                if (createDto.ImageFile == null)
+                {
+                    ModelState.AddModelError("ErrorMessage", "Product Image is required");
+                    return BadRequest(ModelState);
+                }
+
+                string wwwRootPath = _hostEnvironment.WebRootPath;
+
+                string fileName = Guid.NewGuid().ToString();
+                var uploads = Path.Combine(wwwRootPath, @"images\products");
+                var extension = Path.GetExtension(createDto.ImageFile.FileName);
+
+                using (var fileStreams = new FileStream(Path.Combine(uploads, fileName + extension), FileMode.Create))
+                {
+                    await createDto.ImageFile.CopyToAsync(fileStreams);
+                }
+
+                if (createDto == null)
                 {
                     return BadRequest();
                 }
 
                 Product product = _mapper.Map<Product>(createDto);
+                product.ImageUrl = @"\images\products\" + fileName + extension;
 
                 await _dbProduct.CreateAsync(product);
                 _response.Result = _mapper.Map<ProductDTO>(product);

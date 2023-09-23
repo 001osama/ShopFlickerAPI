@@ -25,6 +25,7 @@ namespace ShopFlickerAPI.Data
                     Name = "Carrots",
                     Amount = 1.99,
                     Desc = "Fresh carrots from the local farm.",
+                    ImageUrl = "none",
                     CreatedDate = DateTime.Now.AddMonths(-2)
                 },
                 new Product
@@ -32,6 +33,7 @@ namespace ShopFlickerAPI.Data
                     Id = 2,
                     Name = "Broccoli",
                     Amount = 2.49,
+                    ImageUrl = "none",
                     Desc = "Organic broccoli for a healthy diet.",
                     CreatedDate = DateTime.Now.AddMonths(-1)
                 },
@@ -40,6 +42,7 @@ namespace ShopFlickerAPI.Data
                     Id = 3,
                     Name = "Spinach",
                     Amount = 1.79,
+                    ImageUrl = "none",
                     Desc = "Leafy green spinach, perfect for salads.",
                     CreatedDate = DateTime.Now.AddMonths(-3)
                 },
@@ -48,6 +51,7 @@ namespace ShopFlickerAPI.Data
                     Id = 4,
                     Name = "Tomatoes",
                     Amount = 2.99,
+                    ImageUrl = "none",
                     Desc = "Vine-ripened tomatoes for your recipes.",
                     CreatedDate = DateTime.Now.AddMonths(-2)
                 },
@@ -56,6 +60,7 @@ namespace ShopFlickerAPI.Data
                     Id = 5,
                     Name = "Cucumbers",
                     Amount = 1.49,
+                    ImageUrl = "none",
                     Desc = "Crunchy cucumbers for snacking.",
                     CreatedDate = DateTime.Now.AddMonths(-2)
                 }
