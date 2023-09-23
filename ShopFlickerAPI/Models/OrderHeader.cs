@@ -41,4 +41,4 @@ namespace ShopFlickerAPI.Models
         public string PostalCode { get; set; }
     }
 }
-}
+
