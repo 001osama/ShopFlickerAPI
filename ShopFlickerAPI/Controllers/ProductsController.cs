@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting.Internal;
 using ShopFlickerAPI.Models;
 using ShopFlickerAPI.Models.DTO;
 using ShopFlickerAPI.Repository.IRepository;
