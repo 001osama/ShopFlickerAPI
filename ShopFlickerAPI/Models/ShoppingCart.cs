@@ -14,14 +14,16 @@ namespace ShopFlickerAPI.Models
         [ForeignKey("Products")]
         [ValidateNever]
         public int ProductId { get; set; }
-        public Product Products { get; set; }
+        public Product Product { get; set; }
 
         [ForeignKey("Users")]
         [ValidateNever]
 
-        public int UserId { get; set; }
-        public ApplicationUser Users{ get; set; }
+        public string UserId { get; set; }
+        public ApplicationUser User{ get; set; }
         public int Count { get; set; }
-        public double Price { get; set; }
+        public double TotalPrice { get; set; }
+        public DateTime UpdatedDate { get; set; }
+        public DateTime CreatedDate { get; set; }
     }
 }

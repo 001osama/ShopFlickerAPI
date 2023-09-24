@@ -128,6 +128,7 @@ namespace ShopFlickerAPI.Controllers
 
                 Product product = _mapper.Map<Product>(createDto);
                 product.ImageUrl = @"\images\products\" + fileName + extension;
+                product.CreatedDate = DateTime.Now;
 
                 await _dbProduct.CreateAsync(product);
                 _response.Result = _mapper.Map<ProductDTO>(product);
@@ -192,6 +193,8 @@ namespace ShopFlickerAPI.Controllers
                 }
 
                 Product model = _mapper.Map<Product>(updateDto);
+
+                model.UpdatedDate = DateTime.Now;
                 await _dbProduct.UpdateAsync(model);
                 _response.StatusCode = HttpStatusCode.OK;
                 _response.IsSuccess = true;

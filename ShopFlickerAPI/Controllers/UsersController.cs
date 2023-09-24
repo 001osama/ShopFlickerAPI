@@ -4,6 +4,7 @@ using ShopFlickerAPI.Models;
 using ShopFlickerAPI.Models.DTO;
 using ShopFlickerAPI.Repository.IRepository;
 using System.Net;
+using System.Security.Claims;
 
 namespace ShopFlickerAPI.Controllers
 {

@@ -32,6 +32,13 @@ namespace ShopFlickerAPI.Repository
 
                 query = query.Skip(pageSize * (pageNumber - 1)).Take(pageSize);
             }
+            if (includeProperties != null)
+            {
+                foreach (var includeProp in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProp);
+                }
+            }
             return await query.ToListAsync();
         }
 

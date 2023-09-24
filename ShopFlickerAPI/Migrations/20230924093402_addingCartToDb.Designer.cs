@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShopFlickerAPI.Data;
 
@@ -11,9 +12,11 @@ using ShopFlickerAPI.Data;
 namespace ShopFlickerAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230924093402_addingCartToDb")]
+    partial class addingCartToDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -337,6 +340,9 @@ namespace ShopFlickerAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -352,9 +358,6 @@ namespace ShopFlickerAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
-
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("datetime2");
 
@@ -366,51 +369,51 @@ namespace ShopFlickerAPI.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2023, 7, 24, 18, 49, 29, 961, DateTimeKind.Local).AddTicks(5851),
+                            Amount = 1.99,
+                            CreatedDate = new DateTime(2023, 7, 24, 14, 34, 1, 366, DateTimeKind.Local).AddTicks(5054),
                             Desc = "Fresh carrots from the local farm.",
                             ImageUrl = "none",
                             Name = "Carrots",
-                            Price = 1.99,
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2023, 8, 24, 18, 49, 29, 961, DateTimeKind.Local).AddTicks(5880),
+                            Amount = 2.4900000000000002,
+                            CreatedDate = new DateTime(2023, 8, 24, 14, 34, 1, 366, DateTimeKind.Local).AddTicks(5082),
                             Desc = "Organic broccoli for a healthy diet.",
                             ImageUrl = "none",
                             Name = "Broccoli",
-                            Price = 2.4900000000000002,
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2023, 6, 24, 18, 49, 29, 961, DateTimeKind.Local).AddTicks(5884),
+                            Amount = 1.79,
+                            CreatedDate = new DateTime(2023, 6, 24, 14, 34, 1, 366, DateTimeKind.Local).AddTicks(5087),
                             Desc = "Leafy green spinach, perfect for salads.",
                             ImageUrl = "none",
                             Name = "Spinach",
-                            Price = 1.79,
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 4,
-                            CreatedDate = new DateTime(2023, 7, 24, 18, 49, 29, 961, DateTimeKind.Local).AddTicks(5887),
+                            Amount = 2.9900000000000002,
+                            CreatedDate = new DateTime(2023, 7, 24, 14, 34, 1, 366, DateTimeKind.Local).AddTicks(5090),
                             Desc = "Vine-ripened tomatoes for your recipes.",
                             ImageUrl = "none",
                             Name = "Tomatoes",
-                            Price = 2.9900000000000002,
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
                         new
                         {
                             Id = 5,
-                            CreatedDate = new DateTime(2023, 7, 24, 18, 49, 29, 961, DateTimeKind.Local).AddTicks(5890),
+                            Amount = 1.49,
+                            CreatedDate = new DateTime(2023, 7, 24, 14, 34, 1, 366, DateTimeKind.Local).AddTicks(5093),
                             Desc = "Crunchy cucumbers for snacking.",
                             ImageUrl = "none",
                             Name = "Cucumbers",
-                            Price = 1.49,
                             UpdatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });
                 });
@@ -426,17 +429,11 @@ namespace ShopFlickerAPI.Migrations
                     b.Property<int>("Count")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
-
-                    b.Property<double>("TotalPrice")
-                        .HasColumnType("float");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -449,58 +446,6 @@ namespace ShopFlickerAPI.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ShoppingCarts");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Count = 3,
-                            CreatedDate = new DateTime(2023, 9, 24, 12, 49, 29, 961, DateTimeKind.Utc).AddTicks(6425),
-                            ProductId = 1,
-                            TotalPrice = 10.99,
-                            UpdatedDate = new DateTime(2023, 9, 24, 13, 49, 29, 961, DateTimeKind.Utc).AddTicks(6423),
-                            UserId = "49372f70-f714-417a-bfbf-2b7595975a88"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Count = 2,
-                            CreatedDate = new DateTime(2023, 9, 24, 11, 49, 29, 961, DateTimeKind.Utc).AddTicks(6441),
-                            ProductId = 2,
-                            TotalPrice = 5.9900000000000002,
-                            UpdatedDate = new DateTime(2023, 9, 24, 13, 49, 29, 961, DateTimeKind.Utc).AddTicks(6440),
-                            UserId = "49372f70-f714-417a-bfbf-2b7595975a88"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Count = 1,
-                            CreatedDate = new DateTime(2023, 9, 24, 10, 49, 29, 961, DateTimeKind.Utc).AddTicks(6445),
-                            ProductId = 3,
-                            TotalPrice = 8.4900000000000002,
-                            UpdatedDate = new DateTime(2023, 9, 24, 13, 49, 29, 961, DateTimeKind.Utc).AddTicks(6444),
-                            UserId = "49372f70-f714-417a-bfbf-2b7595975a88"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Count = 4,
-                            CreatedDate = new DateTime(2023, 9, 24, 9, 49, 29, 961, DateTimeKind.Utc).AddTicks(6448),
-                            ProductId = 4,
-                            TotalPrice = 12.99,
-                            UpdatedDate = new DateTime(2023, 9, 24, 13, 49, 29, 961, DateTimeKind.Utc).AddTicks(6447),
-                            UserId = "49372f70-f714-417a-bfbf-2b7595975a88"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Count = 2,
-                            CreatedDate = new DateTime(2023, 9, 24, 8, 49, 29, 961, DateTimeKind.Utc).AddTicks(6451),
-                            ProductId = 5,
-                            TotalPrice = 7.9900000000000002,
-                            UpdatedDate = new DateTime(2023, 9, 24, 13, 49, 29, 961, DateTimeKind.Utc).AddTicks(6451),
-                            UserId = "49372f70-f714-417a-bfbf-2b7595975a88"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -586,21 +531,21 @@ namespace ShopFlickerAPI.Migrations
 
             modelBuilder.Entity("ShopFlickerAPI.Models.ShoppingCart", b =>
                 {
-                    b.HasOne("ShopFlickerAPI.Models.Product", "Product")
+                    b.HasOne("ShopFlickerAPI.Models.Product", "Products")
                         .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ShopFlickerAPI.Models.ApplicationUser", "User")
+                    b.HasOne("ShopFlickerAPI.Models.ApplicationUser", "Users")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Product");
+                    b.Navigation("Products");
 
-                    b.Navigation("User");
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

@@ -63,6 +63,7 @@ namespace ShopFlickerAPI.Repository
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(ClaimTypes.Name, user.UserName.ToString()),
                     new Claim(ClaimTypes.Role, roles.FirstOrDefault())
                 }),
