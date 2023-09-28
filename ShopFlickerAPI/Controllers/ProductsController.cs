@@ -26,7 +26,6 @@ namespace ShopFlickerAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -55,8 +54,11 @@ namespace ShopFlickerAPI.Controllers
 
 
         [HttpGet("{id:int}",Name = "GetProduct")]
-        [Authorize(Roles = "customer")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 
         public async  Task<ActionResult<APIResponse>> GetProduct(int id)
         {
@@ -91,8 +93,13 @@ namespace ShopFlickerAPI.Controllers
         }
 
         [HttpPost]
-        //[Authorize(Roles = "admin")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+
         public async Task<ActionResult<APIResponse>> CreateProduct([FromForm]ProductCreateDTO createDto)
         {
             try
@@ -127,13 +134,15 @@ namespace ShopFlickerAPI.Controllers
                 }
 
                 Product product = _mapper.Map<Product>(createDto);
-                product.ImageUrl = @"\images\products\" + fileName + extension;
+                product.ImagePath = @"\images\products\" + fileName + extension;
+                product.ImageUrl = @"/images/products/" + fileName + extension;
                 product.CreatedDate = DateTime.Now;
 
                 await _dbProduct.CreateAsync(product);
                 _response.Result = _mapper.Map<ProductDTO>(product);
                 _response.StatusCode = HttpStatusCode.Created;
-                return CreatedAtRoute("GetVilla", new { id = product.Id }, _response);
+                return Ok(_response);
+                //return CreatedAtRoute("GetVilla", new { id = product.Id }, _response);
             }
             catch(Exception ex)
             {
@@ -147,6 +156,10 @@ namespace ShopFlickerAPI.Controllers
         [HttpDelete("{id:int}")]
         [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 
         public async Task<ActionResult<APIResponse>> DeleteProduct(int id)
         {
@@ -154,14 +167,18 @@ namespace ShopFlickerAPI.Controllers
             {
                 if (id == 0)
                 {
-                    return BadRequest();
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    return BadRequest(_response);
                 }
 
                 var product = await _dbProduct.GetAsync(u => u.Id == id);
                 
                 if (product == null)
                 {
-                    return NotFound();
+                    _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.IsSuccess = false;
+                    return NotFound(_response);
                 }
 
                 await _dbProduct.RemoveAsync(product);
@@ -182,24 +199,74 @@ namespace ShopFlickerAPI.Controllers
         [HttpPut("{id:int}")]
         [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
 
-        public async Task<ActionResult<APIResponse>> UpdateProduct(int id, [FromBody] ProductDTO updateDto)
+        public async Task<ActionResult<APIResponse>> UpdateProduct(int id, [FromForm] ProductUpdateDTO updateDto)
         {
             try
             {
                 if(id == 0 || id != updateDto.Id)
                 {
-                    return BadRequest();
+
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    return BadRequest(_response);
                 }
 
-                Product model = _mapper.Map<Product>(updateDto);
+                var oldProduct = await _dbProduct.GetAsync(u => u.Id == updateDto.Id,false);
 
-                model.UpdatedDate = DateTime.Now;
-                await _dbProduct.UpdateAsync(model);
-                _response.StatusCode = HttpStatusCode.OK;
-                _response.IsSuccess = true;
-                return Ok(_response);
+                if(oldProduct == null) 
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessage.Add("Product doesnot exist");
+                    return BadRequest(_response);
+                }
+
+                if(updateDto.ImageFile != null) 
+                {
+                string wwwRootPath = _hostEnvironment.WebRootPath;
+
+                    var oldImagePath = Path.Combine(wwwRootPath, oldProduct.ImagePath.TrimStart('\\'));
                     
+                    if (System.IO.File.Exists(oldImagePath))
+                    {
+                        System.IO.File.Delete(oldImagePath);
+                    }
+
+                    string filename = Guid.NewGuid().ToString();
+                    var uploads = Path.Combine(wwwRootPath, @"images\products");
+                    var extension = Path.GetExtension(updateDto.ImageFile.FileName);
+
+                    using(var fileStream = new FileStream(Path.Combine(uploads, filename + extension), FileMode.Create))
+                    {
+                        await updateDto.ImageFile.CopyToAsync(fileStream);
+                    }
+                    Product product = _mapper.Map<Product>(updateDto);
+                    product.UpdatedDate = DateTime.Now;
+                    product.ImagePath = @"\images\products\" + filename + extension;
+                    product.ImageUrl = @"/images/products/" + filename + extension;
+
+                    await _dbProduct.UpdateAsync(product);
+                    _response.StatusCode = HttpStatusCode.NoContent;
+                    _response.IsSuccess = true;
+                    return Ok(_response);
+
+                }
+                else
+                {
+                    Product model = _mapper.Map<Product>(updateDto);
+                    model.ImageUrl = oldProduct.ImageUrl;
+                    model.ImagePath = oldProduct.ImagePath;
+                    model.UpdatedDate = DateTime.Now;
+                    await _dbProduct.UpdateAsync(model);
+                    _response.StatusCode = HttpStatusCode.OK;
+                    _response.IsSuccess = true;
+                    return Ok(_response);
+                }   
             }
             catch (Exception ex)
             {
@@ -207,7 +274,6 @@ namespace ShopFlickerAPI.Controllers
                 _response.ErrorMessage = new List<string>() { ex.ToString() };
             }
             return _response;
-
         }
     }
 }
