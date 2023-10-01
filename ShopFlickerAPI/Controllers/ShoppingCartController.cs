@@ -70,30 +70,41 @@ namespace ShopFlickerAPI.Controllers
         {
             try
             {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userId == null || userId.IsNullOrEmpty())
+                {
+                    _response.IsSuccess = false;
+                    _response.ErrorMessage.Add("User is not LoggedIn");
+                    _response.StatusCode = HttpStatusCode.Unauthorized;
+                    return Unauthorized(_response);
+                }
+
                 if (createDTO.ProductId == 0)
                 {
                     _response.IsSuccess = false;
                     _response.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(_response);
                 }
+
                 var product = await _dbProduct.GetAsync(u => u.Id == createDTO.ProductId);
                 if(product == null)
                 {
                     ModelState.AddModelError("CustomError", "Product doesnot exist");
                     return BadRequest(ModelState);
                 }
-                var cart = await _dbCart.GetAsync(u => u.ProductId == createDTO.ProductId && u.UserId == createDTO.UserId);
+                var cart = await _dbCart.GetAsync(u => u.ProductId == createDTO.ProductId && u.UserId == userId);
                 if ( cart != null)
                 {
-                    cart.Count += createDTO.Count;
-                    cart.TotalPrice = cart.Count * product.Price;
+                    cart.Quantity += createDTO.Quantity;
+                    cart.TotalPrice = cart.Quantity * product.Price;
                     await _dbCart.UpdateAsync(cart);
                     _response.StatusCode = HttpStatusCode.NoContent;
                     _response.IsSuccess = true;
                     return Ok(_response);
                 }
                 var model = _mapper.Map<ShoppingCart>(createDTO);
-                model.TotalPrice = product.Price * model.Count;
+                model.UserId = userId;
+                model.TotalPrice = product.Price * model.Quantity;
                 await _dbCart.CreateAsync(model);
                 _response.IsSuccess = true;
                 _response.StatusCode = HttpStatusCode.NoContent;
@@ -132,8 +143,8 @@ namespace ShopFlickerAPI.Controllers
                     _response.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(_response);
                 }
-                cart.Count = cart.Count + 1;
-                cart.TotalPrice = cart.Product.Price * cart.Count;
+                cart.Quantity = cart.Quantity + 1;
+                cart.TotalPrice = cart.Product.Price * cart.Quantity;
                 await _dbCart.UpdateAsync(cart);
                 _response.IsSuccess = true;
                 _response.StatusCode=HttpStatusCode.OK;
@@ -174,8 +185,8 @@ namespace ShopFlickerAPI.Controllers
                     _response.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(_response);
                 }
-                cart.Count = cart.Count - 1;
-                cart.TotalPrice = cart.Product.Price * cart.Count;
+                cart.Quantity = cart.Quantity - 1;
+                cart.TotalPrice = cart.Product.Price * cart.Quantity;
                 await _dbCart.UpdateAsync(cart);
                 _response.IsSuccess = true;
                 _response.StatusCode = HttpStatusCode.OK;

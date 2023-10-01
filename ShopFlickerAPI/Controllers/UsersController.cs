@@ -4,7 +4,6 @@ using ShopFlickerAPI.Models;
 using ShopFlickerAPI.Models.DTO;
 using ShopFlickerAPI.Repository.IRepository;
 using System.Net;
-using System.Security.Claims;
 
 namespace ShopFlickerAPI.Controllers
 {
@@ -22,10 +21,10 @@ namespace ShopFlickerAPI.Controllers
 
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequestDTO model) 
+        public async Task<IActionResult> Login([FromBody] LoginRequestDTO model)
         {
             var loginResponse = await _userRepo.Login(model);
-            if(loginResponse.User == null || string.IsNullOrEmpty(loginResponse.Token))
+            if (loginResponse.User == null || string.IsNullOrEmpty(loginResponse.Token))
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.IsSuccess = false;
@@ -40,10 +39,10 @@ namespace ShopFlickerAPI.Controllers
 
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegistrationRequestDTO model) 
+        public async Task<IActionResult> Register([FromBody] RegistrationRequestDTO model)
         {
             bool ifUsernameUnique = _userRepo.IsUniqueUser(model.Username);
-            if (!ifUsernameUnique) 
+            if (!ifUsernameUnique)
             {
                 _response.StatusCode = HttpStatusCode.BadRequest;
                 _response.ErrorMessage.Add("User already exists");
