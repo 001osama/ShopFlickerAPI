@@ -38,7 +38,7 @@ namespace ShopFlickerAPI.Controllers
 
                 if(!string.IsNullOrEmpty(search))
                 {
-                    productList = productList.Where(u => u.Name.ToLower() == search.ToLower());
+                    productList = productList.Where(u => u.Name.ToLower().Contains(search.ToLower()));
                 }
                 _response.Result = _mapper.Map<List<ProductDTO>>(productList);
                 return Ok(_response);
