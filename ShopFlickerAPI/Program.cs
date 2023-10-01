@@ -87,7 +87,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddCors(options => options.AddPolicy(name: "ShopFlicker",
     policy =>
     {
-        policy.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyMethod();
+        policy.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader();
     }));
 
 var app = builder.Build();
