@@ -21,7 +21,7 @@ namespace ShopFlickerAPI.Models
 
         public string UserId { get; set; }
         public ApplicationUser User{ get; set; }
-        public int Count { get; set; }
+        public int Quantity { get; set; }
         public double TotalPrice { get; set; }
         public DateTime UpdatedDate { get; set; }
         public DateTime CreatedDate { get; set; }
