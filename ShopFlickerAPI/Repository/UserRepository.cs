@@ -14,12 +14,17 @@ namespace ShopFlickerAPI.Repository
     public class UserRepository : IUserRepository
     {
         private readonly ApplicationDbContext _db;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private string secretKey;
         private readonly IMapper _mapper;
-        public UserRepository(ApplicationDbContext db, IConfiguration configuration, 
-            IMapper mapper, RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+        public UserRepository(
+            ApplicationDbContext db, 
+            IConfiguration configuration, 
+            IMapper mapper, 
+            RoleManager<IdentityRole> roleManager, 
+            UserManager<ApplicationUser> userManager)
         {
             _db = db;
             secretKey = configuration.GetValue<string>("ApiSettings:Secret");
@@ -27,9 +32,9 @@ namespace ShopFlickerAPI.Repository
             _roleManager = roleManager;
             _userManager = userManager;
         }
-        public bool IsUniqueUser(string username)
+        public bool IsUniqueUser(string email)
         {
-            var user = _db.ApplicationUsers.FirstOrDefault(x => x.UserName == username);
+            var user = _db.ApplicationUsers.FirstOrDefault(x => x.Email == email);
             if(user == null) 
             {
                 return true;
@@ -39,7 +44,7 @@ namespace ShopFlickerAPI.Repository
 
         public async Task<LoginResponseDTO> Login(LoginRequestDTO loginRequestDTO)
         {
-            var user = _db.ApplicationUsers.FirstOrDefault( u => u.UserName.ToLower() == loginRequestDTO.Username.ToLower());
+            var user = _db.ApplicationUsers.FirstOrDefault( u => u.Email.ToLower() == loginRequestDTO.Email.ToLower());
 
             var isValid = await _userManager.CheckPasswordAsync(user, loginRequestDTO.Password);    
 
@@ -86,8 +91,8 @@ namespace ShopFlickerAPI.Repository
             {
                 Name = registrationRequestDTO.Name,
                 UserName = registrationRequestDTO.Username,
-                Email = registrationRequestDTO.Username,
-                NormalizedEmail = registrationRequestDTO.Username.ToUpper(),
+                Email = registrationRequestDTO.Email,
+                NormalizedEmail = registrationRequestDTO.Email.ToUpper(),
             };
 
             try
