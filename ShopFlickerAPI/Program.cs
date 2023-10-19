@@ -8,11 +8,14 @@ using ShopFlickerAPI.Data;
 using ShopFlickerAPI.Models;
 using ShopFlickerAPI.Repository;
 using ShopFlickerAPI.Repository.IRepository;
+using Stripe;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+StripeConfiguration.ApiKey = builder.Configuration["StripeSettings:SecretKey"];
 
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
 {
@@ -87,7 +90,10 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddCors(options => options.AddPolicy(name: "ShopFlicker",
     policy =>
     {
-        policy.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader();
+        policy
+        .WithOrigins("http://localhost:4200", "https://checkout.stripe.com")
+        .AllowAnyMethod()
+        .AllowAnyHeader();
     }));
 
 var app = builder.Build();
@@ -104,6 +110,7 @@ app.UseCors("ShopFlicker");
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
+
 
 app.UseAuthentication();
 
