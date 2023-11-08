@@ -14,7 +14,6 @@ namespace ShopFlickerAPI.Repository
     public class UserRepository : IUserRepository
     {
         private readonly ApplicationDbContext _db;
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private string secretKey;
@@ -32,6 +31,8 @@ namespace ShopFlickerAPI.Repository
             _roleManager = roleManager;
             _userManager = userManager;
         }
+
+        
         public bool IsUniqueUser(string email)
         {
             var user = _db.ApplicationUsers.FirstOrDefault(x => x.Email == email);
@@ -85,8 +86,9 @@ namespace ShopFlickerAPI.Repository
             return loginResponseDTO;
         }
 
-        public async Task<UserDTO> Register(RegistrationRequestDTO registrationRequestDTO)
+        public async Task<ApplicationUser> Register(RegistrationRequestDTO registrationRequestDTO)
         {
+
             ApplicationUser user = new()
             {
                 Name = registrationRequestDTO.Name,
@@ -106,14 +108,18 @@ namespace ShopFlickerAPI.Repository
                         await _roleManager.CreateAsync(new IdentityRole("customer"));
                     }
                     await _userManager.AddToRoleAsync(user, "customer");
+
                     var userToReturn = _db.ApplicationUsers
                         .FirstOrDefault(u => u.UserName == registrationRequestDTO.Username);
-                    return _mapper.Map<UserDTO>(userToReturn);
+                    if (userToReturn != null)
+                    {
+                        return userToReturn;
+                    }
                 }
             }
             catch (Exception ex) { }
 
-            return new UserDTO();
+            return new ApplicationUser();
         }
     }
 }

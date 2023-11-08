@@ -7,6 +7,6 @@ namespace ShopFlickerAPI.Repository.IRepository
     {
         bool IsUniqueUser(string username);
         Task<LoginResponseDTO> Login(LoginRequestDTO loginRequestDTO);
-        Task<UserDTO> Register(RegistrationRequestDTO registrationRequestDTO);
+        Task<ApplicationUser> Register(RegistrationRequestDTO registrationRequestDTO);
     }
 }
