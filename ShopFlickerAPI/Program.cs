@@ -8,6 +8,8 @@ using ShopFlickerAPI.Data;
 using ShopFlickerAPI.Models;
 using ShopFlickerAPI.Repository;
 using ShopFlickerAPI.Repository.IRepository;
+using ShopFlickerAPI.Services;
+using ShopFlickerAPI.Services.IServices;
 using Stripe;
 using System.Text;
 
@@ -25,9 +27,22 @@ builder.Services.AddDbContext<ApplicationDbContext>(option =>
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
+builder.Services.AddScoped<IOrderHeaderRepository, OrderHeaderRepository>();
+builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
+builder.Services.AddScoped<IEmailSender, EmailSender>();
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.User.RequireUniqueEmail = true;
+    options.SignIn.RequireConfirmedEmail = true;
+})
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+
+builder.Services.Configure<DataProtectionTokenProviderOptions>(options => 
+    options.TokenLifespan = TimeSpan.FromHours(10)
+);
 
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 
@@ -110,7 +125,6 @@ app.UseCors("ShopFlicker");
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
-
 
 app.UseAuthentication();
 
