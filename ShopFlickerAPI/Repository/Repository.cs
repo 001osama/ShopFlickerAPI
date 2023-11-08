@@ -81,5 +81,11 @@ namespace ShopFlickerAPI.Repository
         {
             await _db.SaveChangesAsync();
         }
+
+        public async Task RemoveRangeAsync(IEnumerable<T> entities)
+        {
+            _db.RemoveRange(entities);
+            await SaveAsync();
+        }
     }
 }
