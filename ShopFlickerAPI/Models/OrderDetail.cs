@@ -16,7 +16,7 @@ namespace ShopFlickerAPI.Models
         [ForeignKey("Products")]
         public int ProductId { get; set; }
         public Product Products { get; set; }
-        public int Count { get; set; }
+        public int Quantity { get; set; }
         public double Price { get; set; }
 
     }

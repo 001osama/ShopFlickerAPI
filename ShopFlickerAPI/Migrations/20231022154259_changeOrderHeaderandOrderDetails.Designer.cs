@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShopFlickerAPI.Data;
 
@@ -11,9 +12,11 @@ using ShopFlickerAPI.Data;
 namespace ShopFlickerAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231022154259_changeOrderHeaderandOrderDetails")]
+    partial class changeOrderHeaderandOrderDetails
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -265,9 +268,6 @@ namespace ShopFlickerAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("OrderDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("OrderStatus")
                         .HasColumnType("nvarchar(max)");
 
@@ -367,51 +367,51 @@ namespace ShopFlickerAPI.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedDate = new DateTime(2023, 11, 3, 19, 59, 37, 415, DateTimeKind.Utc).AddTicks(5313),
+                            CreatedDate = new DateTime(2023, 10, 22, 14, 42, 59, 230, DateTimeKind.Utc).AddTicks(903),
                             ProductId = 1,
                             Quantity = 3,
                             TotalPrice = 10.99,
-                            UpdatedDate = new DateTime(2023, 11, 3, 20, 59, 37, 415, DateTimeKind.Utc).AddTicks(5310),
+                            UpdatedDate = new DateTime(2023, 10, 22, 15, 42, 59, 230, DateTimeKind.Utc).AddTicks(898),
                             UserId = "49372f70-f714-417a-bfbf-2b7595975a88"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedDate = new DateTime(2023, 11, 3, 18, 59, 37, 415, DateTimeKind.Utc).AddTicks(5324),
+                            CreatedDate = new DateTime(2023, 10, 22, 13, 42, 59, 230, DateTimeKind.Utc).AddTicks(919),
                             ProductId = 2,
                             Quantity = 2,
                             TotalPrice = 5.9900000000000002,
-                            UpdatedDate = new DateTime(2023, 11, 3, 20, 59, 37, 415, DateTimeKind.Utc).AddTicks(5323),
+                            UpdatedDate = new DateTime(2023, 10, 22, 15, 42, 59, 230, DateTimeKind.Utc).AddTicks(919),
                             UserId = "49372f70-f714-417a-bfbf-2b7595975a88"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedDate = new DateTime(2023, 11, 3, 17, 59, 37, 415, DateTimeKind.Utc).AddTicks(5327),
+                            CreatedDate = new DateTime(2023, 10, 22, 12, 42, 59, 230, DateTimeKind.Utc).AddTicks(922),
                             ProductId = 3,
                             Quantity = 1,
                             TotalPrice = 8.4900000000000002,
-                            UpdatedDate = new DateTime(2023, 11, 3, 20, 59, 37, 415, DateTimeKind.Utc).AddTicks(5326),
+                            UpdatedDate = new DateTime(2023, 10, 22, 15, 42, 59, 230, DateTimeKind.Utc).AddTicks(921),
                             UserId = "49372f70-f714-417a-bfbf-2b7595975a88"
                         },
                         new
                         {
                             Id = 4,
-                            CreatedDate = new DateTime(2023, 11, 3, 16, 59, 37, 415, DateTimeKind.Utc).AddTicks(5329),
+                            CreatedDate = new DateTime(2023, 10, 22, 11, 42, 59, 230, DateTimeKind.Utc).AddTicks(925),
                             ProductId = 4,
                             Quantity = 4,
                             TotalPrice = 12.99,
-                            UpdatedDate = new DateTime(2023, 11, 3, 20, 59, 37, 415, DateTimeKind.Utc).AddTicks(5328),
+                            UpdatedDate = new DateTime(2023, 10, 22, 15, 42, 59, 230, DateTimeKind.Utc).AddTicks(924),
                             UserId = "49372f70-f714-417a-bfbf-2b7595975a88"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedDate = new DateTime(2023, 11, 3, 15, 59, 37, 415, DateTimeKind.Utc).AddTicks(5332),
+                            CreatedDate = new DateTime(2023, 10, 22, 10, 42, 59, 230, DateTimeKind.Utc).AddTicks(927),
                             ProductId = 5,
                             Quantity = 2,
                             TotalPrice = 7.9900000000000002,
-                            UpdatedDate = new DateTime(2023, 11, 3, 20, 59, 37, 415, DateTimeKind.Utc).AddTicks(5331),
+                            UpdatedDate = new DateTime(2023, 10, 22, 15, 42, 59, 230, DateTimeKind.Utc).AddTicks(927),
                             UserId = "49372f70-f714-417a-bfbf-2b7595975a88"
                         });
                 });
