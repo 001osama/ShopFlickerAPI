@@ -99,12 +99,12 @@ builder.Services.AddSwaggerGen(options =>
                 }
             });
     });
-
+var frontendurl = builder.Configuration["FrontendBaseUrl"];
 builder.Services.AddCors(options => options.AddPolicy(name: "ShopFlicker",
     policy =>
     {
         policy
-        .WithOrigins("http://localhost:4200")
+        .WithOrigins(frontendurl)
         .AllowAnyMethod()
         .AllowAnyHeader();
     }));
