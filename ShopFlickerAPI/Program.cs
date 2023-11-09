@@ -66,8 +66,6 @@ builder.Services.AddAuthentication(x =>
         };
     });
 
-//builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-//    .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -106,7 +104,7 @@ builder.Services.AddCors(options => options.AddPolicy(name: "ShopFlicker",
     policy =>
     {
         policy
-        .WithOrigins("http://localhost:4200", "https://checkout.stripe.com")
+        .WithOrigins("http://localhost:4200")
         .AllowAnyMethod()
         .AllowAnyHeader();
     }));
