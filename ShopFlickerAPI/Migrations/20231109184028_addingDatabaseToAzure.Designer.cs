@@ -12,8 +12,8 @@ using ShopFlickerAPI.Data;
 namespace ShopFlickerAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230923093625_addingIdentityLib")]
-    partial class addingIdentityLib
+    [Migration("20231109184028_addingDatabaseToAzure")]
+    partial class addingDatabaseToAzure
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -227,6 +227,72 @@ namespace ShopFlickerAPI.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("ShopFlickerAPI.Models.OrderDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("OrderHeaderId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderHeaderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderDetails");
+                });
+
+            modelBuilder.Entity("ShopFlickerAPI.Models.OrderHeader", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OrderStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("OrderTotal")
+                        .HasColumnType("float");
+
+                    b.Property<string>("PaymentIntentId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SessionId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
+
+                    b.ToTable("OrderHeader");
+                });
+
             modelBuilder.Entity("ShopFlickerAPI.Models.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -235,9 +301,6 @@ namespace ShopFlickerAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<double>("Amount")
-                        .HasColumnType("float");
-
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
@@ -245,55 +308,63 @@ namespace ShopFlickerAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<double>("Price")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.ToTable("Products");
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Amount = 1.99,
-                            CreatedDate = new DateTime(2023, 7, 23, 14, 36, 25, 104, DateTimeKind.Local).AddTicks(1384),
-                            Desc = "Fresh carrots from the local farm.",
-                            Name = "Carrots"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Amount = 2.4900000000000002,
-                            CreatedDate = new DateTime(2023, 8, 23, 14, 36, 25, 104, DateTimeKind.Local).AddTicks(1411),
-                            Desc = "Organic broccoli for a healthy diet.",
-                            Name = "Broccoli"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Amount = 1.79,
-                            CreatedDate = new DateTime(2023, 6, 23, 14, 36, 25, 104, DateTimeKind.Local).AddTicks(1413),
-                            Desc = "Leafy green spinach, perfect for salads.",
-                            Name = "Spinach"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Amount = 2.9900000000000002,
-                            CreatedDate = new DateTime(2023, 7, 23, 14, 36, 25, 104, DateTimeKind.Local).AddTicks(1415),
-                            Desc = "Vine-ripened tomatoes for your recipes.",
-                            Name = "Tomatoes"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Amount = 1.49,
-                            CreatedDate = new DateTime(2023, 7, 23, 14, 36, 25, 104, DateTimeKind.Local).AddTicks(1417),
-                            Desc = "Crunchy cucumbers for snacking.",
-                            Name = "Cucumbers"
-                        });
+            modelBuilder.Entity("ShopFlickerAPI.Models.ShoppingCart", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<double>("TotalPrice")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ShoppingCarts");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -345,6 +416,55 @@ namespace ShopFlickerAPI.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ShopFlickerAPI.Models.OrderDetail", b =>
+                {
+                    b.HasOne("ShopFlickerAPI.Models.OrderHeader", "OrderHeader")
+                        .WithMany()
+                        .HasForeignKey("OrderHeaderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ShopFlickerAPI.Models.Product", "Products")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OrderHeader");
+
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("ShopFlickerAPI.Models.OrderHeader", b =>
+                {
+                    b.HasOne("ShopFlickerAPI.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("ShopFlickerAPI.Models.ShoppingCart", b =>
+                {
+                    b.HasOne("ShopFlickerAPI.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ShopFlickerAPI.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

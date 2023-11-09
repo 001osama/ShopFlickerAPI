@@ -6,16 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ShopFlickerAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class addingIdentityLib : Migration
+    public partial class addingDatabaseToAzure : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DeleteData(
-                table: "Products",
-                keyColumn: "Id",
-                keyValue: 6);
-
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -54,6 +49,25 @@ namespace ShopFlickerAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Products",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<double>(type: "float", nullable: false),
+                    Desc = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Products", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -162,40 +176,88 @@ namespace ShopFlickerAPI.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.UpdateData(
-                table: "Products",
-                keyColumn: "Id",
-                keyValue: 1,
-                column: "CreatedDate",
-                value: new DateTime(2023, 7, 23, 14, 36, 25, 104, DateTimeKind.Local).AddTicks(1384));
+            migrationBuilder.CreateTable(
+                name: "OrderHeader",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    OrderTotal = table.Column<double>(type: "float", nullable: false),
+                    OrderStatus = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PaymentStatus = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SessionId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PaymentIntentId = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderHeader", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrderHeader_AspNetUsers_ApplicationUserId",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
-            migrationBuilder.UpdateData(
-                table: "Products",
-                keyColumn: "Id",
-                keyValue: 2,
-                column: "CreatedDate",
-                value: new DateTime(2023, 8, 23, 14, 36, 25, 104, DateTimeKind.Local).AddTicks(1411));
+            migrationBuilder.CreateTable(
+                name: "ShoppingCarts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    TotalPrice = table.Column<double>(type: "float", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ShoppingCarts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ShoppingCarts_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ShoppingCarts_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
-            migrationBuilder.UpdateData(
-                table: "Products",
-                keyColumn: "Id",
-                keyValue: 3,
-                column: "CreatedDate",
-                value: new DateTime(2023, 6, 23, 14, 36, 25, 104, DateTimeKind.Local).AddTicks(1413));
-
-            migrationBuilder.UpdateData(
-                table: "Products",
-                keyColumn: "Id",
-                keyValue: 4,
-                column: "CreatedDate",
-                value: new DateTime(2023, 7, 23, 14, 36, 25, 104, DateTimeKind.Local).AddTicks(1415));
-
-            migrationBuilder.UpdateData(
-                table: "Products",
-                keyColumn: "Id",
-                keyValue: 5,
-                column: "CreatedDate",
-                value: new DateTime(2023, 7, 23, 14, 36, 25, 104, DateTimeKind.Local).AddTicks(1417));
+            migrationBuilder.CreateTable(
+                name: "OrderDetails",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderHeaderId = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderDetails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrderDetails_OrderHeader_OrderHeaderId",
+                        column: x => x.OrderHeaderId,
+                        principalTable: "OrderHeader",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderDetails_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -235,6 +297,31 @@ namespace ShopFlickerAPI.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderDetails_OrderHeaderId",
+                table: "OrderDetails",
+                column: "OrderHeaderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderDetails_ProductId",
+                table: "OrderDetails",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderHeader_ApplicationUserId",
+                table: "OrderHeader",
+                column: "ApplicationUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShoppingCarts_ProductId",
+                table: "ShoppingCarts",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShoppingCarts_UserId",
+                table: "ShoppingCarts",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -256,50 +343,22 @@ namespace ShopFlickerAPI.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "OrderDetails");
+
+            migrationBuilder.DropTable(
+                name: "ShoppingCarts");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "OrderHeader");
+
+            migrationBuilder.DropTable(
+                name: "Products");
+
+            migrationBuilder.DropTable(
                 name: "AspNetUsers");
-
-            migrationBuilder.UpdateData(
-                table: "Products",
-                keyColumn: "Id",
-                keyValue: 1,
-                column: "CreatedDate",
-                value: new DateTime(2023, 7, 19, 0, 23, 49, 318, DateTimeKind.Local).AddTicks(9841));
-
-            migrationBuilder.UpdateData(
-                table: "Products",
-                keyColumn: "Id",
-                keyValue: 2,
-                column: "CreatedDate",
-                value: new DateTime(2023, 8, 19, 0, 23, 49, 318, DateTimeKind.Local).AddTicks(9887));
-
-            migrationBuilder.UpdateData(
-                table: "Products",
-                keyColumn: "Id",
-                keyValue: 3,
-                column: "CreatedDate",
-                value: new DateTime(2023, 6, 19, 0, 23, 49, 318, DateTimeKind.Local).AddTicks(9893));
-
-            migrationBuilder.UpdateData(
-                table: "Products",
-                keyColumn: "Id",
-                keyValue: 4,
-                column: "CreatedDate",
-                value: new DateTime(2023, 7, 19, 0, 23, 49, 318, DateTimeKind.Local).AddTicks(9899));
-
-            migrationBuilder.UpdateData(
-                table: "Products",
-                keyColumn: "Id",
-                keyValue: 5,
-                column: "CreatedDate",
-                value: new DateTime(2023, 7, 19, 0, 23, 49, 318, DateTimeKind.Local).AddTicks(9903));
-
-            migrationBuilder.InsertData(
-                table: "Products",
-                columns: new[] { "Id", "Amount", "CreatedDate", "Desc", "Name" },
-                values: new object[] { 6, 1.49, new DateTime(2023, 7, 19, 0, 23, 49, 318, DateTimeKind.Local).AddTicks(9908), "Crunchy cucumbers for snacking.", "Cucumbers" });
         }
     }
 }
