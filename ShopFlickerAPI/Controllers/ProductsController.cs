@@ -137,6 +137,7 @@ namespace ShopFlickerAPI.Controllers
                 product.ImagePath = @"\images\products\" + fileName + extension;
                 product.ImageUrl = @"/images/products/" + fileName + extension;
                 product.CreatedDate = DateTime.Now;
+                product.UpdatedDate = DateTime.Now;
 
                 await _dbProduct.CreateAsync(product);
                 _response.Result = _mapper.Map<ProductDTO>(product);
