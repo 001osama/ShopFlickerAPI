@@ -21,7 +21,7 @@ namespace ShopFlickerAPI.Controllers
 
 
         [HttpPost("subscribe")]
-        public async Task<ActionResult<APIResponse>> Subscribe([FromBody] string email)
+        public async Task<ActionResult<APIResponse>> Subscribe([FromBody] SubscribeRequestDTO subscribeRequest)
         {
             try
             {
@@ -44,9 +44,9 @@ namespace ShopFlickerAPI.Controllers
                 {
                     Subject = "Welcome to Our Newsletter",
                     Body = messageBody,
-                    Email = email
+                    Email = subscribeRequest.Email
                 });
-                _response.Result = new { email };
+                _response.Result = new { subscribeRequest.Email };
                 _response.IsSuccess = true;
                 _response.StatusCode = HttpStatusCode.OK;
                 return Ok(_response);
@@ -61,7 +61,7 @@ namespace ShopFlickerAPI.Controllers
         }
 
         [HttpPost("emailMessage")]
-        public async Task<ActionResult<APIResponse>> EmailMessage([FromBody]EmailMessageDTO emailMessage)
+        public async Task<ActionResult<APIResponse>> EmailMessage([FromBody] EmailMessageDTO emailMessage)
         {
             try
             {
