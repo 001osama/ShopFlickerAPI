@@ -112,11 +112,14 @@ builder.Services.AddCors(options => options.AddPolicy(name: "ShopFlicker",
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+//if (app.Environment.IsDevelopment())
+//{
+//}
+app.UseSwagger();
+app.UseSwaggerUI( options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    options.RoutePrefix = String.Empty;
+});
 
 app.UseCors("ShopFlicker");
 
